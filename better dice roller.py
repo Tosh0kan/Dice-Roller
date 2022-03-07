@@ -11,39 +11,39 @@ def splitter(string: str):
     
     return a
 
-def get_vars(list: list):
-    numDice = int(list[list.index('d')-1])
-    numSides = int(list[list.index('d') +1])
-    if '+' in list:
+def get_vars(vars_list: list):
+    numDice = int(vars_list[vars_list.index('d')-1])
+    numSides = int(vars_list[vars_list.index('d') +1])
+    if '+' in vars_list:
         operator = '+'
     else:
         operator = ''
 
-    if '+' in list:
-        modifier = int(list[list.index('+') +1])
-    elif '-' in list:
-        modifier = int(list[list.index('-') +1]) * -1
+    if '+' in vars_list:
+        modifier = int(vars_list[vars_list.index('+') +1])
+    elif '-' in vars_list:
+        modifier = int(vars_list[vars_list.index('-') +1]) * -1
     else:
         modifier = 0
 
-    if '>' in list:
-        threshold = int(list[list.index('>') +1])
+    if '>' in vars_list:
+        threshold = int(vars_list[vars_list.index('>') +1])
         threshold_op = '>'
-    elif '<' in list:
-        threshold = int(list[list.index('<') +1])
+    elif '<' in vars_list:
+        threshold = int(vars_list[vars_list.index('<') +1])
         threshold_op = '<'
-    elif '>=' in list:
-        threshold = int(list[list.index('>=') +1])
+    elif '>=' in vars_list:
+        threshold = int(vars_list[vars_list.index('>=') +1])
         threshold_op = '>='
-    elif '<=' in list:
-        threshold = int(list[list.index('<=') +1])
+    elif '<=' in vars_list:
+        threshold = int(vars_list[vars_list.index('<=') +1])
         threshold_op = '<='
     else:
         threshold = 0
         threshold_op = ''
 
-    repeat_value = 0 if ('repeat' not in list) else int(list[list.index('repeat') +1])
-        
+    repeat_value = 0 if ('repeat' not in vars_list) else int(vars_list[vars_list.index('repeat') +1])
+
     return numDice, numSides, operator, modifier, repeat_value, threshold, threshold_op
 
 def rollDice():
@@ -62,19 +62,26 @@ def get_roll():
     return output_message, summation, results
 
 while True:
-    roll_input = input('Roll? ')
-    processed_input = splitter(roll_input)
-    numDice, numSides, operator, modifier, repeat_value, threshold, threshold_op = get_vars(processed_input)
-    loop_count = 0
-    while loop_count <= repeat_value:
-        output_message, summation, results = get_roll()
-        if threshold_op == '<':
-            while summation >= threshold:
-                output_message, summation, results = get_roll()
+    try:
+        roll_input = input('Roll? ')
+        processed_input = splitter(roll_input)
+        numDice, numSides, operator, modifier, repeat_value, threshold, threshold_op = get_vars(processed_input)
+        loop_count = 0
+        while loop_count <= repeat_value:
+            output_message, summation, results = get_roll()
+            if threshold_op == '<':
+                while summation >= threshold:
+                    output_message, summation, results = get_roll()
+                    
+            elif threshold_op == '>':
+                while summation <= threshold:
+                    output_message, summation, results = get_roll()
 
-        elif threshold_op == '>':
-            while summation <= threshold:
-                output_message, summation, results = get_roll()
-
-        print(output_message)
-        loop_count = loop_count +1
+            print(output_message)
+            loop_count = loop_count +1
+        
+    except ValueError:
+        print('Invalid dice syntax. Try again\n')
+    
+    except IndexError:
+        print('Invalid sequence of items. Try again\n')
